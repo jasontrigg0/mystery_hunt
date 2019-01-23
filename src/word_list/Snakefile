@@ -1,0 +1,45 @@
+#create masterlist of words and phrases for searching for puzzle answers
+#ideally like onelook.com but with more control
+
+
+#for list of proper nouns / multi words use wikipedia pageviews
+#pageviews listed here:
+#https://dumps.wikimedia.org/other/pagecounts-ez/merged/
+#eg:
+#pagecounts-2018-12-views-ge-5-totals
+"/tmp/english_wikipedia_pageviews.txt" <- "/home/jtrigg/Downloads/pagecounts-2018-12-views-ge-5-totals"
+  less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.z' | pawk -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])'  > $OUTPUT0
+
+"/tmp/enwiki.txt" <- "/tmp/english_wikipedia_pageviews.txt"
+  python preprocess_wiki.py $INPUT0 | psort -c1 -n > $OUTPUT0
+
+
+#instead, for regular nouns process this wikipedia corpus
+"/tmp/word_freq_899115703.txt" <- "/home/jtrigg/Downloads/WestburyLab/WestburyLab.Wikipedia.Corpus.txt"
+  python generate_corpus_frequencies.py
+
+#normalize and merge the two datasets:
+#spitballing for a couple similar words between datasets (eg country names) it looks like the wikipedia articles are sampled 6x more?
+#so multiply the word_freq by 6 and add / merge
+"/tmp/word_list.txt" <- "/tmp/word_freq_899115703.txt", "/tmp/enwiki.txt"
+  python merge_wiki_corpus.py $INPUT0 $INPUT1 > $OUTPUT0
+
+#option for next steps: count appearances of wikipedia page titles (ie possibly multiword) in wikipedia corpus
+#and replace word_list.txt with these counts
+
+######unused:######
+
+#wiktionary doesn't have enough pageviews so don't use that for regular nouns
+#less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.d' | pawk -p 'write_line(re.findall("^en.d (.*) (\d+)$",l.strip())[0])' > /tmp/english_wiktionary_pageviews.txt
+
+#wiktionary page titles
+#note, this includes non-english words (!), redirects, incorrect spellings, etc
+#https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-all-titles-in-ns0.gz
+
+#wiktionary real dump to filter for english words:
+#enwiktionary-latest-pages-articles.xml.bz2
+#filter for english words
+#less enwiktionary-latest-pages-articles.xml | pawk -b 'inpage=False' -p 'if l.strip() == "<page>": inpage=True; title=""; english=False; end; if "<title>" in l.strip(): title = re.findall("<title>(.*)</title>",l)[0]; end; if "==English==" in l: print(title);' > /tmp/wiktionary_words_direct.txt
+
+#wikipedia page titles
+#https://dumps.wikimedia.org/enwiki/latest/enwiki-20190101-all-titles-in-ns0.gz
