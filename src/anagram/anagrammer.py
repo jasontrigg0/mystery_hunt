@@ -131,5 +131,8 @@ if __name__ == "__main__":
     #find_anagrams(['e', 'e', 'i', 'l', 'n', 'o', 'o', 'r'],2,2,[t])
     writer = csv.writer(sys.stdout)
     for words in find_anagrams(letter_bank,3,wildcards,[t], test=test_function):
-        score = sum([math.log(int(v[1][1])) for w in words for v in t.find(list(w)) if v[1]])
+        score = 0
+        for w in words:
+            match = [m for m in t.find(list(w)) if m[0] == w][0]
+            score += math.log(int(match[1][1]))
         writer.writerow([words, score])
