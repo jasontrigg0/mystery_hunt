@@ -8,7 +8,8 @@
 #eg:
 #pagecounts-2018-12-views-ge-5-totals
 "/tmp/english_wikipedia_pageviews.txt" <- "/home/jtrigg/Downloads/pagecounts-2018-12-views-ge-5-totals"
-  less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.z' | pawk -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])'  > $OUTPUT0
+  #less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.z' | pawk -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])'  > $OUTPUT0
+  less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.z ' | pawk -g 're.findall("^en.z (.*) (\d+)$",l.strip())' -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])' > /tmp/english_wikipedia_pageviews.txt > $OUTPUT0
 
 "/tmp/enwiki.txt" <- "/tmp/english_wikipedia_pageviews.txt"
   python preprocess_wiki.py $INPUT0 | psort -c1 -n > $OUTPUT0
