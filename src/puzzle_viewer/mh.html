@@ -1,0 +1,94 @@
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="http://golden-layout.com/assets/js/goldenlayout.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@widgetbot/html-embed"></script>
+<script>
+ function parseUrlParams() {
+   //https://stackoverflow.com/a/52539264
+   let entries = new URLSearchParams(location.search);
+   let result = {}
+   for(let entry of entries) { // each 'entry' is a [key, value] tupple
+     const [key, value] = entry;
+     result[key] = value;
+   }
+   return result;
+ }
+ function loadUrlParams() {
+   let params = parseUrlParams();
+   for (let key in params) {
+     let value = params[key];
+     //TODO: handle parameters that don't correspond to input ids
+     document.getElementById(key).value = params[key];
+   }
+ }
+
+ //TODO: load from a spreadsheet
+ const puzzleInfo = [
+   {
+     title:"Snow Job",
+     puzzleUrl:"https://pennypark.fun/puzzle/snow_job/",
+     spreadsheetUrl:"https://docs.google.com/spreadsheets/d/145oxNqXcF0osW2Ak6Jm_D-Xb1A0e64m7j7bjXoPeHn8/edit#gid=0&range=A1", //note this points to a specific sheet
+     discordChannel:"355719584830980096"
+   },
+   {
+     title:"Penny Park Guide",
+     puzzleUrl:"https://pennypark.fun/puzzle/visitor_guide/",
+     spreadsheetUrl:"https://docs.google.com/spreadsheets/d/145oxNqXcF0osW2Ak6Jm_D-Xb1A0e64m7j7bjXoPeHn8/edit#gid=1778394682&range=A1", //note this points to a specific sheet
+     discordChannel:"355719584830980096"
+   }
+
+ ];
+
+ const puzzleId = parseUrlParams()["puzzleId"];
+ document.title = "Mystery Hunt: " + puzzleInfo[puzzleId]["title"];
+ var config = {
+   content: [{
+     type: 'row',
+     content:[{
+       type: 'stack',
+       width: 80,
+       content:[{
+         type: 'component',
+         componentName: 'puzzlePage',
+         title: puzzleInfo[puzzleId]["title"]
+       },{
+         type: 'component',
+         componentName: 'googleSheet',
+         title:'Google Sheet'
+       }]
+     },{
+       type: 'column',
+       content:[{
+         type: 'component',
+         componentName: 'discordComponent',
+         title: 'Discord Channel'
+       }]
+     }]
+   }]
+ };
+
+ var myLayout = new GoldenLayout( config );
+
+ myLayout.registerComponent('puzzlePage', function( container, state ){
+   container.getElement().html('<iframe style="width:100%;height:100%" src="'+puzzleInfo[puzzleId]["puzzleUrl"]+'"></iframe>');
+ });
+
+ myLayout.registerComponent('googleSheet', function( container, state ) {
+   container.getElement().html('<iframe style="width:100%;height:100%" src="'+puzzleInfo[puzzleId]["spreadsheetUrl"]+'"></iframe>');
+ });
+
+ myLayout.registerComponent('discordComponent', function(container, state) {
+   container.getElement().html('<widgetbot server="299881420891881473" channel="'+puzzleInfo[puzzleId]["discordChannel"]+'" width="100%" height="100%" shard="https://disweb.dashflo.net"></widgetbot>');
+ });
+
+ myLayout.init();
+</script>
+<link type="text/css" rel="stylesheet" href="http://golden-layout.com/assets/css/goldenlayout-base.css" />
+<link type="text/css" rel="stylesheet" href="http://golden-layout.com/assets/css/goldenlayout-dark-theme.css" />
+<style>
+ h2 {
+   font: 14px Arial, sans-serif;
+   color:#fff;
+   padding: 10px;
+   text-align: center;
+ }
+</style>
