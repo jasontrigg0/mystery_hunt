@@ -7,16 +7,16 @@
 #https://dumps.wikimedia.org/other/pagecounts-ez/merged/
 #eg:
 #pagecounts-2018-12-views-ge-5-totals
-"/tmp/english_wikipedia_pageviews.txt" <- "/home/jtrigg/Downloads/pagecounts-2018-12-views-ge-5-totals"
-  #less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.z' | pawk -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])'  > $OUTPUT0
-  less ~/Downloads/pagecounts-2018-12-views-ge-5-totals | grep '^en.z ' | pawk -g 're.findall("^en.z (.*) (\d+)$",l.strip())' -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])' > /tmp/english_wikipedia_pageviews.txt > $OUTPUT0
+"/tmp/english_wikipedia_pageviews.txt" <- "/ssd/files/wikipedia/pagecounts-2018-12-views-ge-5-totals"
+  #less $INPUT0 | grep '^en.z' | pawk -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])'  > $OUTPUT0
+  less $INPUT0 | grep '^en.z ' | pawk -g 're.findall("^en.z (.*) (\d+)$",l.strip())' -p 'write_line(re.findall("^en.z (.*) (\d+)$",l.strip())[0])' > /tmp/english_wikipedia_pageviews.txt > $OUTPUT0
 
 "/tmp/enwiki.txt" <- "/tmp/english_wikipedia_pageviews.txt"
   python preprocess_wiki.py $INPUT0 | psort -c1 -n > $OUTPUT0
 
 
 #instead, for regular nouns process this wikipedia corpus
-"/tmp/word_freq_899115703.txt" <- "/home/jtrigg/Downloads/WestburyLab/WestburyLab.Wikipedia.Corpus.txt"
+"/tmp/word_freq_899115703.txt" <- "/ssd/files/wikipedia/WestburyLab/WestburyLab.Wikipedia.Corpus.txt"
   python generate_corpus_frequencies.py
 
 #normalize and merge the two datasets:
@@ -28,7 +28,7 @@
 #crossword clues (not used)
 #from Saul Pwanson:
 #http://xd.saul.pw/xd-clues.zip
-"/tmp/clues.csv" <- "/home/jtrigg/Downloads/xd-clues/xd/clues.tsv"
+"/tmp/clues.csv" <- "/ssd/files/crossword/xd-clues/xd/clues.tsv"
   less $INPUT0 | pawk -d '\t' -p 'if len(r)>4: r[3] = " ".join(r[3:]); end; write_line(r[:4])' | pagg -g answer -a cnt --append | psort -c answer_cnt > $OUTPUT0
 
 #option for next steps: count appearances of wikipedia page titles (ie possibly multiword) in wikipedia corpus
