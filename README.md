@@ -1,7 +1,9 @@
 #tools for mystery_hunt
 
-#generate a frequency sorted word list
-#in src/word_list
+#frequency sorted word lists in src/word_list, including:
+#wiki_1m.txt - a list of most common proper nouns (as measured by wikipedia page visits)
+#corpus_1m.txt - a list of most common words (pulled from a corpus of wiki articles)
+#word_list_1m.txt - the above two combined
 
 #anagrammer tool
 #generate list of k words that anagram to a given list
